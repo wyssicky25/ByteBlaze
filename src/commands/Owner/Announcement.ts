@@ -5,7 +5,7 @@ import { CommandHandler } from '../../structures/CommandHandler.js'
 
 export default class implements Command {
   public name = ['announcement']
-  public description = 'Send announcement mesage to all server'
+  public description = 'Send announcement message to all servers'
   public category = 'Owner'
   public accessableby = [Accessableby.Admin]
   public usage = '<your_message>'
@@ -25,56 +25,60 @@ export default class implements Command {
         embeds: [new EmbedBuilder().setColor(client.color).setDescription('`⚠️` | Empty args!')],
       })
 
-    const avalibleChannel: GuildBasedChannel[] = []
-    const allGuild = client.guilds.cache.map((guild) => guild)
-    let sentSuccesfully = 0
+    const availableChannels: { guildName: string, channelName: string }[] = []
+    const allGuilds = client.guilds.cache.map((guild) => guild)
+    let sentSuccessfully = 0
 
-    for (const guild of allGuild) {
-      const channelFilterTextBased = guild.channels.cache.filter((channel) => channel.isTextBased())
-      const channelFilterPermission = channelFilterTextBased.filter((channel) =>
+    for (const guild of allGuilds) {
+      const textChannels = guild.channels.cache.filter((channel) => channel.isTextBased())
+      const permittedChannels = textChannels.filter((channel) =>
         channel.guild.members.me?.permissions.has(PermissionFlagsBits.SendMessages)
       )
-      const channelFilterGeneral = channelFilterPermission.filter((channel) =>
+      const generalChannels = permittedChannels.filter((channel) =>
         channel.name.includes('general')
       )
-      const channelFilterNonGeneral = channelFilterPermission.filter(
+      const nonGeneralChannels = permittedChannels.filter(
         (channel) => !channel.name.includes('general')
       )
-      if (channelFilterGeneral.size !== 0) {
-        avalibleChannel.push(channelFilterGeneral.first()!)
-      } else {
-        avalibleChannel.push(channelFilterNonGeneral.first()!)
-      }
-    }
+      const selectedChannel = generalChannels.size !== 0 ? generalChannels.first() : nonGeneralChannels.first()
 
-    const parsed = handler.message.content.replace(handler.prefix, '').split(' ')
-    const block = this.parse(parsed.slice(1).join(' '))
-
-    for (const channel of avalibleChannel) {
-      sentSuccesfully = sentSuccesfully + 1
-      const announcement = new EmbedBuilder()
-        .setAuthor({ name: '💫 | Announcement' })
-        .setDescription(block !== null ? block[2] : parsed.slice(1).join(' ')!)
-        .setColor(client.color)
-        .setFooter({
-          text: `${handler.guild!.members.me!.displayName}`,
-          iconURL: client.user!.displayAvatarURL(),
+      if (selectedChannel) {
+        availableChannels.push({
+          guildName: guild.name,
+          channelName: selectedChannel.name,
         })
-      await (channel as TextChannel)
-        .send({ embeds: [announcement] })
-        .catch(() => (sentSuccesfully = sentSuccesfully - 1))
+
+        try {
+          const announcement = new EmbedBuilder()
+            .setAuthor({ name: '💫 | Announcement' })
+            .setDescription(this.parse(handler.message.content.replace(handler.prefix, '').split(' ').slice(1).join(' '))?.[2] || handler.message.content.replace(handler.prefix, '').split(' ').slice(1).join(' '))
+            .setColor(client.color)
+            .setFooter({
+              text: `${handler.guild!.members.me!.displayName}`,
+              iconURL: client.user!.displayAvatarURL(),
+            })
+          await (selectedChannel as TextChannel).send({ embeds: [announcement] })
+          sentSuccessfully += 1
+        } catch {
+          // Do nothing if sending fails
+        }
+      }
     }
 
     const result = new EmbedBuilder()
       .setDescription(
-        `\`🟢\` | **Sent successfully in ${sentSuccesfully}**\n\`🔴\` | **Sent failed in ${
-          avalibleChannel.length - sentSuccesfully
-        }**`
+        `\`🟢\` | **Sent successfully in ${sentSuccessfully} channels**\n\`🔴\` | **Failed to send in ${availableChannels.length - sentSuccessfully} channels**`
       )
       .setColor(client.color)
       .setFooter({
         text: `${handler.guild!.members.me!.displayName}`,
         iconURL: client.user!.displayAvatarURL(),
+      })
+      .addFields({
+        name: 'Channels with Announcements',
+        value: availableChannels.length > 0
+          ? availableChannels.map(({ guildName, channelName }) => `**${guildName}**: #${channelName}`).join('\n')
+          : 'No channels available',
       })
 
     await handler.editReply({ embeds: [result] })

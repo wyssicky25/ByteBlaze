@@ -8,7 +8,7 @@ import { stripIndents } from 'common-tags'
 
 export default class implements Command {
   public name = ['host']
-  public description = 'Show the host infomation/status!'
+  public description = 'Show the host information/status!'
   public category = 'Owner'
   public accessableby = [Accessableby.Owner]
   public usage = ''
@@ -51,6 +51,22 @@ export default class implements Command {
     - Guild Count: ${client.guilds.cache.size}
     - User count: ${client.guilds.cache.reduce((a, b) => a + b.memberCount, 0)}
     \`\`\``
+
+    // Lấy thông tin các node Lavalink
+const nodesArray = client.rainlink.nodes.full.map(([_, node]) => node);
+
+// Log thông tin từng node
+nodesArray.forEach((node, index) => {
+  console.log(`Node ${index + 1}:`);
+  console.log(`Name: ${node.options.name}`);
+  console.log(`Online: ${node.online}`);
+  console.log(`Host: ${node.options.host}`);
+  console.log(`Port: ${node.options.port}`);
+  console.log(`CPU Cores: ${node.stats.cpu.cores}`);
+  console.log('---'); // Separator between nodes
+});
+
+
 
     const embed = new EmbedBuilder()
       .setAuthor({
