@@ -98,6 +98,9 @@ export class ConfigDataService {
         LANGUAGE: 'en',
         DEBUG_MODE: false,
         ADMIN: [],
+        ACTIVITY1: '',
+        ACTIVITY2: '',
+        ACTIVITY3: '',
       },
       player: {
         SPOTIFY: {

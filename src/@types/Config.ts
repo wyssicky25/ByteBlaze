@@ -15,6 +15,9 @@ export interface Bot {
   ADMIN: string[]
   LANGUAGE: string
   DEBUG_MODE: boolean
+  ACTIVITY1: string
+  ACTIVITY2: string
+  ACTIVITY3: string
 }
 
 export interface Utilities {
