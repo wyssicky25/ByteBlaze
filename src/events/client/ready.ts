@@ -12,12 +12,13 @@ export default class {
     client.logger.info('ClientReady', `Logged in ${client.user!.tag}`)
 
     const updatePresence = () => {
-      const ACTIVITY1 = this.config.bot.ACTIVITY1;
-      const ACTIVITY2 = this.config.bot.ACTIVITY2;
-      const ACTIVITY3 = this.config.bot.ACTIVITY3;
+      const ACTIVITY1 = client.config.bot.ACTIVITY1;
+      const ACTIVITY2 = client.config.bot.ACTIVITY2;
+      const ACTIVITY3 = client.config.bot.ACTIVITY3;
       const activities = [
         {
-          name: `${ACTIVITY1}`,
+          name: `${ACTIVITY1}`
+          .replace("{client.metadata.version}", client.metadata.version),
           type: 2, // Activity type: 0 = Playing, 1 = Streaming, 2 = Listening, 3 = Watching
         },
         {

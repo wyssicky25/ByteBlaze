@@ -8,14 +8,14 @@ bot:
   # You can add more than 1 token to clone the bot
   # Note that performance will be dreaded and you can't set each config for each cloned bot
   # Config data of each bot will be the same
-  TOKEN: ''
+  TOKEN: '
   EMBED_COLOR: '#2B2D31'
   OWNER_ID: '688359074559033344'
   ADMIN: ['<your_trusted_admin_discord_id_here>']
   # You can set it to en, vi...
   LANGUAGE: 'en'
   DEBUG_MODE: true
-  ACTIVITY1: 'v${client.metadata.version} | /play'
+  ACTIVITY1: 'v{client.metadata.version} | /play'
   ACTIVITY2: 'Music is playing!'
   ACTIVITY3: 'Join the fun!'
 

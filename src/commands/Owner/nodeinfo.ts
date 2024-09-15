@@ -50,12 +50,25 @@ export default class implements Command {
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
       const stats = node.stats;
+
+      // hàm cặc gì đau đầu vcl
+      const formatUptime = (uptimeMs) => {
+        const totalSeconds = Math.floor(uptimeMs / 1000);
+        const days = Math.floor(totalSeconds / (3600 * 24));
+        const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+      
+        return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      };
+      
+      const StatUptime = formatUptime(stats.uptime);
     
     // Format the stats information
       const statsString = `
  Players: ${stats.players}
  Playing Players: ${stats.playingPlayers}
- Uptime: ${Math.round(stats.uptime / 1000)}s
+ Uptime: ${StatUptime}
  Memory: 
    Reservable: ${Math.round(stats.memory.reservable / 1024 / 1024)} MB
    Used: ${Math.round(stats.memory.used / 1024 / 1024)} MB
